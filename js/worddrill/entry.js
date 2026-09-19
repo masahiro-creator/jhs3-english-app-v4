@@ -26,9 +26,7 @@ import { pickDistractors } from "./lib/distractors.js";
 import { speak } from "./lib/speech.js";
 import { renderHomeScreen } from "./components/home.js";
 import { renderVocabQuizScreen } from "./components/vocabQuiz.js";
-import { renderStatsScreen } from "./components/stats.js";
 import { renderDoneScreen } from "./components/done.js";
-import { renderGraphScreen } from "./components/graph.js";
 import { renderWordListScreen, filterWords, WORDLIST_PAGE_SIZE } from "./components/wordList.js";
 
 const DECK = {
@@ -80,8 +78,7 @@ export function mountWordDrill(hostElement) {
   let isWeakSession = false;
   let wordListGrade = "all";
   let wordListQuery = "";
-  let wordListVisibleCount = WORDLIST_PAGE_SIZE;
-  let wordListObserver = null;
+  let wordListPage = 0;
 
   function dueFresh() {
     const today = todayString();
@@ -125,44 +122,42 @@ export function mountWordDrill(hostElement) {
       if (picked !== null) {
         hostElement.scrollIntoView({ block: "end", behavior: "smooth" });
       }
-    } else if (screen === "stats") {
-      wrap.innerHTML = renderStatsScreen({ stats: computeCategoryStats(DECK.items, progress) });
     } else if (screen === "done") {
       wrap.innerHTML = renderDoneScreen({
         sureCount: runStats.sure,
         guessCount: runStats.guess,
         missCount: runStats.miss,
       });
-    } else if (screen === "graph") {
-      wrap.innerHTML = renderGraphScreen({ history });
     } else if (screen === "wordlist") {
       wrap.innerHTML = renderWordListScreen({
         words: WORDS,
         progress,
         gradeFilter: wordListGrade,
         query: wordListQuery,
-        visibleCount: wordListVisibleCount,
+        page: wordListPage,
       });
       const searchInput = wrap.querySelector("#wordlist-search");
       if (searchInput) {
         searchInput.focus();
         searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
       }
-      if (wordListObserver) wordListObserver.disconnect();
-      const sentinel = wrap.querySelector("#wordlist-sentinel");
-      if (sentinel) {
-        wordListObserver = new IntersectionObserver((entries) => {
-          if (entries.some((e) => e.isIntersecting)) loadMoreWordList();
-        });
-        wordListObserver.observe(sentinel);
-      }
     }
   }
 
-  function loadMoreWordList() {
+  function wordListPageCount() {
     const total = filterWords(WORDS, wordListGrade, wordListQuery).length;
-    if (wordListVisibleCount >= total) return;
-    wordListVisibleCount = Math.min(wordListVisibleCount + WORDLIST_PAGE_SIZE, total);
+    return Math.max(1, Math.ceil(total / WORDLIST_PAGE_SIZE));
+  }
+
+  function goWordListPrevPage() {
+    if (wordListPage <= 0) return;
+    wordListPage -= 1;
+    render();
+  }
+
+  function goWordListNextPage() {
+    if (wordListPage >= wordListPageCount() - 1) return;
+    wordListPage += 1;
     render();
   }
 
@@ -171,20 +166,15 @@ export function mountWordDrill(hostElement) {
     render();
   }
 
-  function goGraph() {
-    screen = "graph";
-    render();
-  }
-
   function goWordList() {
     screen = "wordlist";
-    wordListVisibleCount = WORDLIST_PAGE_SIZE;
+    wordListPage = 0;
     render();
   }
 
   function setWordListGrade(grade) {
     wordListGrade = grade;
-    wordListVisibleCount = WORDLIST_PAGE_SIZE;
+    wordListPage = 0;
     render();
   }
 
@@ -273,13 +263,11 @@ export function mountWordDrill(hostElement) {
     if (!target) return;
     const action = target.dataset.action;
     if (action === "quit-quiz") quitQuiz();
-    else if (action === "go-stats") {
-      screen = "stats";
-      render();
-    } else if (action === "go-home") goHome();
-    else if (action === "go-graph") goGraph();
+    else if (action === "go-home") goHome();
     else if (action === "go-wordlist") goWordList();
     else if (action === "set-wordlist-grade") setWordListGrade(target.dataset.grade);
+    else if (action === "wordlist-prev-page") goWordListPrevPage();
+    else if (action === "wordlist-next-page") goWordListNextPage();
     else if (action === "pick") pickChoice(Number(target.dataset.index));
     else if (action === "grade") gradeAnswer(target.dataset.outcome);
     else if (action === "speak") speak(target.dataset.text);
@@ -288,7 +276,7 @@ export function mountWordDrill(hostElement) {
   shadow.addEventListener("input", (event) => {
     if (event.target.id === "wordlist-search") {
       wordListQuery = event.target.value;
-      wordListVisibleCount = WORDLIST_PAGE_SIZE;
+      wordListPage = 0;
       render();
     }
   });
@@ -319,6 +307,13 @@ export function mountWordDrill(hostElement) {
     startNewSession,
     startWeakSession,
     setNewPerDay,
+    goWordList,
+    getCategoryStats() {
+      return computeCategoryStats(DECK.items, progress);
+    },
+    getHistory() {
+      return history;
+    },
   };
 }
 

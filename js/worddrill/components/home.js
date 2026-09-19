@@ -35,12 +35,10 @@ export function renderHomeScreen({
       <div class="stages">${stagesHtml}</div>
     </div>
 
-    <p class="meta" style="text-align:center; margin-bottom:16px">🚀 今日の復習・新しい語の学習は「ダッシュボード」から始められるよ</p>
+    <p class="meta" style="text-align:center; margin-bottom:16px">🚀 今日の復習・新しい語の学習、成績・記録は「ダッシュボード」から</p>
 
     <div class="foot">
-      <button class="link" data-action="go-stats">📊 分野ごとの成績を見る</button>
       <button class="link" data-action="go-wordlist">📖 単語一覧を見る</button>
-      <button class="link" data-action="go-graph">📈 これまでの記録を見る</button>
     </div>
   `;
 }

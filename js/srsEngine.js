@@ -74,6 +74,30 @@ window.SRSEngine = {
   },
 
   /**
+   * 活用パターン(AAA/ABB/ABA/ABC)ごとの正答率を低い順に並べる。未回答は含めない。
+   */
+  getCategoryStats(verbs = []) {
+    const byType = new Map();
+    verbs.forEach((v) => {
+      if (window.StorageEngine.isUnseen(v.id)) return;
+      const state = window.StorageEngine.getItem(v.id);
+      if (state.total === 0) return;
+      const stat = byType.get(v.type) ?? { correct: 0, seen: 0 };
+      stat.correct += state.correct;
+      stat.seen += state.total;
+      byType.set(v.type, stat);
+    });
+    return [...byType.entries()]
+      .map(([type, stat]) => ({
+        category: `${type}型`,
+        correct: stat.correct,
+        seen: stat.seen,
+        rate: stat.correct / stat.seen,
+      }))
+      .sort((a, b) => a.rate - b.rate);
+  },
+
+  /**
    * 不規則動詞の記憶定着度ステータスを計算
    */
   getStats(verbs = []) {

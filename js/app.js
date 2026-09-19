@@ -56,6 +56,10 @@ window.App = {
       window.WeakSectionComponent.render('tab-weak');
     } else if (tabId === 'verbs') {
       window.VerbSectionComponent.render('tab-verbs');
+    } else if (tabId === 'stats') {
+      window.StatsViewComponent.render('tab-stats');
+    } else if (tabId === 'graph') {
+      window.GraphViewComponent.render('tab-graph');
     }
   },
 

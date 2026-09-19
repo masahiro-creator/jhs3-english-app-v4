@@ -25,11 +25,13 @@ function statusFor(card) {
 }
 
 /**
- * 単語一覧画面。学年で絞り込み・キーワード検索ができる。スクロールで追加読み込み。
- * @param {{words: import('../data/words.js').WordItem[], progress: import('../lib/scheduler.js').Progress, gradeFilter:string, query:string, visibleCount:number}} props
+ * 単語一覧画面。学年で絞り込み・キーワード検索ができる。100語ずつページ送り。
+ * @param {{words: import('../data/words.js').WordItem[], progress: import('../lib/scheduler.js').Progress, gradeFilter:string, query:string, page:number}} props
  */
-export function renderWordListScreen({ words, progress, gradeFilter, query, visibleCount }) {
+export function renderWordListScreen({ words, progress, gradeFilter, query, page }) {
   const filtered = filterWords(words, gradeFilter, query);
+  const pageCount = Math.max(1, Math.ceil(filtered.length / WORDLIST_PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount - 1);
 
   const tabsHtml = GRADE_TABS.map(
     (t) => `
@@ -37,7 +39,7 @@ export function renderWordListScreen({ words, progress, gradeFilter, query, visi
         data-action="set-wordlist-grade" data-grade="${t.value}">${t.label}</button>`
   ).join("");
 
-  const rows = filtered.slice(0, visibleCount);
+  const rows = filtered.slice(currentPage * WORDLIST_PAGE_SIZE, (currentPage + 1) * WORDLIST_PAGE_SIZE);
   const rowsHtml = rows.length
     ? rows
         .map((w) => {
@@ -54,12 +56,13 @@ export function renderWordListScreen({ words, progress, gradeFilter, query, visi
         .join("")
     : `<tr><td colspan="5"><p class="meta" style="margin:8px 0">見つかりませんでした。</p></td></tr>`;
 
-  const hasMore = filtered.length > rows.length;
-  const footerHtml = hasMore
-    ? `<div id="wordlist-sentinel" class="meta" style="text-align:center; padding:14px 0">読み込み中…（${rows.length}/${filtered.length}語）</div>`
-    : filtered.length > 0
-      ? `<p class="meta" style="text-align:center; padding:10px 0">これで全${filtered.length}語だよ</p>`
-      : "";
+  const pagerHtml = `
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-top:12px">
+      <button class="btn ghost small" data-action="wordlist-prev-page" ${currentPage <= 0 ? "disabled" : ""}>◀ 前へ</button>
+      <span class="meta">${currentPage + 1} / ${pageCount} ページ</span>
+      <button class="btn ghost small" data-action="wordlist-next-page" ${currentPage >= pageCount - 1 ? "disabled" : ""}>次へ ▶</button>
+    </div>
+  `;
 
   return `
     <div class="app-title"><button class="link" style="padding:0; font:inherit; color:inherit; text-decoration:none" data-action="go-home">◀ ホームに戻る</button></div>
@@ -75,7 +78,7 @@ export function renderWordListScreen({ words, progress, gradeFilter, query, visi
 
     <div class="card" style="overflow-x:auto">
       <table>${rowsHtml}</table>
-      ${footerHtml}
+      ${pagerHtml}
     </div>
   `;
 }

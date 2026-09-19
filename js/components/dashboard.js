@@ -1,7 +1,7 @@
 // 学習ダッシュボード コンポーネント
 // 不規則動詞・単語は「新規」「復習」という同じ2軸を持つ同じカテゴリの学習項目として扱う。
-// 一番上に「動詞新規・動詞復習・単語新規・単語復習」の4ボタンを並べ、押すだけでそのセッションが
-// 始まる構造にし、ストリーク・定着率・弱点克服・探索系リンクはその下に控えめに置く。
+// 「🔥動詞」「📚単語」をそれぞれ枠で囲んで見分けやすくし、各枠の中に新規・復習ボタンと
+// 1日の新規数設定を置く。ストリーク・定着率・弱点克服・探索系リンクはその下に控えめに置く。
 window.DashboardComponent = {
   render(containerId) {
     const container = document.getElementById(containerId);
@@ -19,69 +19,57 @@ window.DashboardComponent = {
     const totalMastered = verbStats.masteredCount + (word ? word.masteredCount : 0);
     const retentionRate = totalItems > 0 ? Math.round((totalMastered / totalItems) * 100) : 0;
 
-    const missionButton = ({ emoji, label, count, unit, onclick, disabledMessage }) => `
-      <button class="option-btn" style="flex-direction: column; gap: 4px; min-height: 96px; ${count > 0 ? '' : 'opacity: 0.55;'}"
+    const missionButton = ({ label, count, unit, onclick }) => `
+      <button class="option-btn" style="flex-direction: column; gap: 2px; min-height: 84px; flex: 1; ${count > 0 ? '' : 'opacity: 0.55;'}"
         ${count > 0 ? `onclick="${onclick}"` : 'disabled'}>
-        <span style="font-size: 26px; font-weight: 800; color: var(--theme-primary);">${count}${unit}</span>
-        <span style="font-size: 13px;">${emoji} ${label}</span>
+        <span style="font-size: 24px; font-weight: 800;">${count}${unit}</span>
+        <span style="font-size: 12.5px;">${label}</span>
       </button>
     `;
 
-    const verbNewBtn = missionButton({
-      emoji: '🆕', label: '動詞・新規', count: verbNewCount, unit: '語',
-      onclick: 'window.App.startNewVerbSession()',
-    });
-    const verbReviewBtn = missionButton({
-      emoji: '🔁', label: '動詞・復習', count: verbStats.dueCount, unit: '問',
-      onclick: 'window.App.startReviewVerbSession()',
-    });
-    const wordNewBtn = word ? missionButton({
-      emoji: '🆕', label: '単語・新規', count: word.freshCount, unit: '語',
-      onclick: "window.WordDrill.startNewSession(); window.App.switchTab('words');",
-    }) : '';
-    const wordReviewBtn = word ? missionButton({
-      emoji: '🔁', label: '単語・復習', count: word.dueCount, unit: '語',
-      onclick: "window.WordDrill.startReviewSession(); window.App.switchTab('words');",
-    }) : '';
-
     const verbPerDayButtonsHtml = [5, 10, 15, 20].map(n => `
-      <button class="option-btn" style="padding: 6px 12px; min-height: 34px; font-size: 12px; background: ${verbNewPerDay === n ? 'var(--theme-btn-grad)' : 'rgba(255,255,255,0.05)'};" onclick="window.DashboardComponent.setVerbNewPerDay(${n})">
+      <button class="option-btn" style="padding: 6px 10px; min-height: 32px; font-size: 12px; background: ${verbNewPerDay === n ? 'var(--theme-btn-grad)' : 'rgba(255,255,255,0.05)'};" onclick="window.DashboardComponent.setVerbNewPerDay(${n})">
         ${n}語
       </button>
     `).join('');
 
     const wordPerDayButtonsHtml = word
       ? word.newPerDayOptions.map(n => `
-          <button class="option-btn" style="padding: 6px 12px; min-height: 34px; font-size: 12px; background: ${word.newPerDay === n ? 'var(--theme-btn-grad)' : 'rgba(255,255,255,0.05)'};" onclick="window.DashboardComponent.setWordNewPerDay(${n})">
+          <button class="option-btn" style="padding: 6px 10px; min-height: 32px; font-size: 12px; background: ${word.newPerDay === n ? 'var(--theme-btn-grad)' : 'rgba(255,255,255,0.05)'};" onclick="window.DashboardComponent.setWordNewPerDay(${n})">
             ${n}語
           </button>
         `).join('')
       : '';
 
     container.innerHTML = `
-      <div class="glass-card" style="padding: 24px 20px;">
-        <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 4px; text-align: center;">📖 今日の学習</h2>
-        <p style="font-size: 12.5px; color: var(--theme-text-sub); margin-bottom: 18px; text-align: center;">
+      <div class="glass-card" style="padding: 22px 18px;">
+        <h2 style="font-size: 19px; font-weight: 800; margin-bottom: 4px; text-align: center;">📖 今日の学習</h2>
+        <p style="font-size: 12px; color: var(--theme-text-sub); margin-bottom: 18px; text-align: center;">
           動詞も単語も、新しく学ぶ／覚え直す の2つを毎日コツコツ
         </p>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-          ${verbNewBtn}
-          ${verbReviewBtn}
-          ${wordNewBtn}
-          ${wordReviewBtn}
-        </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 18px;">
-          <div>
-            <div style="font-size: 11.5px; color: var(--theme-text-sub); margin-bottom: 6px; text-align: center;">🔥 動詞：1日の新規数</div>
-            <div style="display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;">${verbPerDayButtonsHtml}</div>
-          </div>
-          ${word ? `
-            <div>
-              <div style="font-size: 11.5px; color: var(--theme-text-sub); margin-bottom: 6px; text-align: center;">📚 単語：1日の新規数</div>
-              <div style="display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;">${wordPerDayButtonsHtml}</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div style="border: 1px solid rgba(251, 146, 60, 0.4); background: rgba(251, 146, 60, 0.06); border-radius: 16px; padding: 12px;">
+            <div style="font-size: 13px; font-weight: 800; margin-bottom: 8px; text-align: center; color: #fb923c;">🔥 不規則動詞</div>
+            <div style="display: flex; gap: 8px;">
+              ${missionButton({ label: '新規', count: verbNewCount, unit: '語', onclick: 'window.App.startNewVerbSession()' })}
+              ${missionButton({ label: '復習', count: verbStats.dueCount, unit: '問', onclick: 'window.App.startReviewVerbSession()' })}
             </div>
-          ` : '<div></div>'}
+            <div style="font-size: 11px; color: var(--theme-text-sub); margin: 10px 0 6px; text-align: center;">1日の新規数</div>
+            <div style="display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;">${verbPerDayButtonsHtml}</div>
+          </div>
+
+          <div style="border: 1px solid rgba(96, 165, 250, 0.4); background: rgba(96, 165, 250, 0.06); border-radius: 16px; padding: 12px;">
+            <div style="font-size: 13px; font-weight: 800; margin-bottom: 8px; text-align: center; color: #60a5fa;">📚 単語</div>
+            ${word ? `
+              <div style="display: flex; gap: 8px;">
+                ${missionButton({ label: '新規', count: word.freshCount, unit: '語', onclick: "window.WordDrill.startNewSession(); window.App.switchTab('words');" })}
+                ${missionButton({ label: '復習', count: word.dueCount, unit: '語', onclick: "window.WordDrill.startReviewSession(); window.App.switchTab('words');" })}
+              </div>
+              <div style="font-size: 11px; color: var(--theme-text-sub); margin: 10px 0 6px; text-align: center;">1日の新規数</div>
+              <div style="display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;">${wordPerDayButtonsHtml}</div>
+            ` : '<p style="color: var(--theme-text-sub); font-size:12px; text-align:center;">読み込み中…</p>'}
+          </div>
         </div>
       </div>
 
@@ -111,14 +99,22 @@ window.DashboardComponent = {
         </div>
       ` : ''}
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-        <div class="glass-card" style="cursor: pointer;" onclick="window.App.switchTab('verbs')">
-          <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">🔥 不規則動詞デイリーマスター</h3>
-          <p style="font-size: 14px; color: var(--theme-text-sub);">AAA/ABB/ABA/ABC型 全70語の活用形＆音声再生トレーニング</p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="glass-card" style="cursor: pointer; padding: 16px;" onclick="window.App.switchTab('verbs')">
+          <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">🃏 動詞カード・4択練習</h3>
+          <p style="font-size: 12.5px; color: var(--theme-text-sub);">全70語を自由に練習</p>
         </div>
-        <div class="glass-card" style="cursor: pointer;" onclick="window.App.switchTab('words')">
-          <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">📖 単語一覧・成績・記録</h3>
-          <p style="font-size: 14px; color: var(--theme-text-sub);">全1394語の一覧検索・分野別成績・これまでの記録グラフ</p>
+        <div class="glass-card" style="cursor: pointer; padding: 16px;" onclick="window.App.switchTab('words'); window.WordDrill && window.WordDrill.goWordList();">
+          <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">📖 単語一覧</h3>
+          <p style="font-size: 12.5px; color: var(--theme-text-sub);">全1394語を検索して確認</p>
+        </div>
+        <div class="glass-card" style="cursor: pointer; padding: 16px;" onclick="window.App.switchTab('stats')">
+          <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">📊 分野ごとの成績</h3>
+          <p style="font-size: 12.5px; color: var(--theme-text-sub);">動詞＋単語まとめて確認</p>
+        </div>
+        <div class="glass-card" style="cursor: pointer; padding: 16px;" onclick="window.App.switchTab('graph')">
+          <h3 style="font-size: 15px; font-weight: 800; margin-bottom: 4px;">📈 これまでの記録</h3>
+          <p style="font-size: 12.5px; color: var(--theme-text-sub);">動詞＋単語まとめて確認</p>
         </div>
       </div>
     `;

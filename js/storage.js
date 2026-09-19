@@ -39,7 +39,8 @@ window.StorageEngine = {
       xp: 0,                // 学習経験値
       newPerDayVerbs: 10,   // 1日に出す新しい動詞数（単語ドリルと同じ仕組み）
       newDoneTodayVerbs: 0, // 今日すでに新規で出した動詞数
-      lastNewVerbDate: ''   // newDoneTodayVerbsを最後にリセットした日
+      lastNewVerbDate: '',  // newDoneTodayVerbsを最後にリセットした日
+      dailyLog: {}          // 日付(YYYY-MM-DD) -> { answered, masteredSnapshot } 記録グラフ用
     };
   },
 
@@ -105,7 +106,42 @@ window.StorageEngine = {
     this.updateStreak(data);
     this.saveData(data);
 
+    this.logDailyAnswer();
+
     return item;
+  },
+
+  /**
+   * 「これまでの記録」グラフ用に、今日の回答数と現在の殿堂入り動詞数を記録する。
+   * 単語ドリル側のhistoryLogと同じ考え方（日付ごとの回答数＋その時点のマスター数）。
+   */
+  logDailyAnswer() {
+    const data = this.getData();
+    const todayStr = new Date().toISOString().split('T')[0];
+    const verbs = window.IRREGULAR_VERBS || [];
+    const masteredSnapshot = window.SRSEngine ? window.SRSEngine.getStats(verbs).masteredCount : 0;
+    const entry = data.dailyLog[todayStr] || { answered: 0, masteredSnapshot: 0 };
+    entry.answered += 1;
+    entry.masteredSnapshot = masteredSnapshot;
+    data.dailyLog[todayStr] = entry;
+
+    // 直近90日だけ残す（単語ドリルのhistoryLogと同じ保持期間）
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 90);
+    const cutoffStr = cutoff.toISOString().split('T')[0];
+    Object.keys(data.dailyLog).forEach((d) => {
+      if (d < cutoffStr) delete data.dailyLog[d];
+    });
+
+    this.saveData(data);
+  },
+
+  /** 日付昇順の記録ログ配列 [{date, answered, mastered}] を返す */
+  getDailyLog() {
+    const data = this.getData();
+    return Object.keys(data.dailyLog)
+      .sort()
+      .map((date) => ({ date, answered: data.dailyLog[date].answered, mastered: data.dailyLog[date].masteredSnapshot }));
   },
 
   /**
