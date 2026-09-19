@@ -1,38 +1,40 @@
+/* 単語ドリル(v3移植)。v2本体のガラスモーフィズム/推しカラーに合わせたテーマ。
+   --theme-* はv2側 css/style.css の :root / [data-theme="..."] から
+   Shadow DOMの境界を越えて継承される（カスタムプロパティはshadow境界を貫通する）。 */
 :host {
   display: block;
-  background: var(--bg);
-  color: var(--ink);
-  font-family: "M PLUS Rounded 1c", system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Yu Gothic", sans-serif;
+  background: linear-gradient(135deg, var(--theme-bg-start, #0f172a), var(--theme-bg-end, #1e293b));
+  color: var(--theme-text, #f8fafc);
+  font-family: 'Outfit', 'Zen Maru Gothic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 15px;
   line-height: 1.75;
   -webkit-text-size-adjust: 100%;
 
-  --bg: #FFF6E8;
-  --card: #FFFFFF;
-  --line: #F1DFC0;
-  --ink: #2E2A4A;
-  --ink-soft: #8481A0;
-  --ok: #16A673;
-  --ok-soft: #E3FBF1;
-  --ng: #FF5A5F;
-  --ng-soft: #FFEDEC;
-  --marker: #FFE066;
+  --card: var(--theme-card-bg, rgba(30, 41, 59, 0.75));
+  --line: var(--theme-card-border, rgba(255, 255, 255, 0.12));
+  --ink: var(--theme-text, #f8fafc);
+  --ink-soft: var(--theme-text-sub, #94a3b8);
+  --ok: #34d399;
+  --ok-soft: rgba(52, 211, 153, 0.15);
+  --ng: #f87171;
+  --ng-soft: rgba(248, 113, 113, 0.15);
+  --marker: rgba(251, 191, 36, 0.45);
 
-  --accent: #FF7A59;
-  --accent-2: #FF9F6B;
-  --mint: #2FCB9C;
-  --mint-2: #62E0BB;
-  --sky: #4D96FF;
-  --sky-soft: #E7F0FF;
-  --sun: #FFB648;
-  --sun-soft: #FFF3DF;
-  --violet: #9B6BFF;
-  --violet-soft: #F1EAFF;
+  --accent: var(--theme-primary, #38bdf8);
+  --accent-2: var(--theme-accent, #f43f5e);
+  --mint: #34d399;
+  --mint-2: #6ee7b7;
+  --sky: #60a5fa;
+  --sky-soft: rgba(96, 165, 250, 0.15);
+  --sun: #fbbf24;
+  --sun-soft: rgba(251, 191, 36, 0.15);
+  --violet: #c084fc;
+  --violet-soft: rgba(192, 132, 252, 0.15);
 
-  --radius: 16px;
-  --radius-sm: 10px;
-  --shadow-card: 0 2px 10px rgba(46, 42, 74, 0.06);
-  --shadow-pop: 0 6px 18px rgba(46, 42, 74, 0.14);
+  --radius: 20px;
+  --radius-sm: 14px;
+  --shadow-card: 0 12px 40px rgba(0, 0, 0, 0.3);
+  --shadow-pop: 0 8px 32px var(--theme-glow, rgba(56, 189, 248, 0.25));
 }
 
 * {
@@ -69,6 +71,8 @@ mark {
 
 .card {
   background: var(--card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 20px 18px;
@@ -77,11 +81,12 @@ mark {
 }
 
 h1 {
-  font-family: "Fredoka", "M PLUS Rounded 1c", sans-serif;
+  font-family: 'Outfit', 'Zen Maru Gothic', sans-serif;
   font-size: 21px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0 0 4px;
   letter-spacing: 0.01em;
+  color: var(--ink);
 }
 
 .sub {
@@ -96,7 +101,7 @@ h1 {
 }
 
 .app-title {
-  font-family: "Fredoka", "M PLUS Rounded 1c", sans-serif;
+  font-family: 'Outfit', 'Zen Maru Gothic', sans-serif;
   font-weight: 700;
   font-size: 15px;
   color: var(--accent);
@@ -104,26 +109,27 @@ h1 {
   margin-bottom: 10px;
 }
 
-/* ホームのヒーローバナー */
+/* ホームのヒーローバナー（v2の応援バナーに寄せたガラス調） */
 .hero {
-  background: linear-gradient(135deg, var(--sky) 0%, var(--violet) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--accent);
   border-radius: var(--radius);
   padding: 18px 20px;
   margin-bottom: 14px;
-  color: #fff;
+  color: var(--ink);
   box-shadow: var(--shadow-pop);
 }
 
 .hero .greeting {
-  font-family: "Fredoka", "M PLUS Rounded 1c", sans-serif;
+  font-family: 'Outfit', 'Zen Maru Gothic', sans-serif;
   font-size: 17px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0 0 2px;
 }
 
 .hero .greeting-sub {
   font-size: 12.5px;
-  opacity: 0.9;
+  color: var(--ink-soft);
   margin: 0;
 }
 
@@ -138,19 +144,21 @@ h1 {
 .today-tile {
   flex: 1;
   min-width: 140px;
-  background: var(--sun-soft);
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--sun);
   border-radius: var(--radius-sm);
   padding: 14px 14px 12px;
   text-align: center;
 }
 
 .today-tile.review {
-  background: var(--sky-soft);
+  border-left-color: var(--accent);
 }
 
 .num {
-  font-family: "Fredoka", "M PLUS Rounded 1c", sans-serif;
-  font-weight: 700;
+  font-family: 'Outfit', 'Zen Maru Gothic', sans-serif;
+  font-weight: 800;
   font-size: 40px;
   line-height: 1;
   color: var(--ink);
@@ -182,16 +190,17 @@ h1 {
   flex: 1;
   text-align: center;
   padding: 10px 2px 9px;
-  background: #F7F2E6;
+  background: rgba(15, 23, 42, 0.4);
   border-radius: var(--radius-sm);
   border-top: 4px solid var(--line);
 }
 
 .stage b {
   display: block;
-  font-family: "Fredoka", "M PLUS Rounded 1c", sans-serif;
+  font-family: 'Outfit', 'Zen Maru Gothic', sans-serif;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--ink);
 }
 
 .stage span {
@@ -201,7 +210,7 @@ h1 {
 }
 
 .stage.on {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.06);
   box-shadow: var(--shadow-card);
 }
 
@@ -219,7 +228,7 @@ button {
 
 button:focus-visible,
 a:focus-visible {
-  outline: 3px solid var(--sky);
+  outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -227,19 +236,20 @@ a:focus-visible {
   display: block;
   width: 100%;
   text-align: left;
-  background: #fff;
-  border: 2px solid var(--line);
+  background: var(--card);
+  border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   padding: 13px 14px;
   margin-bottom: 10px;
   font-family: Georgia, serif;
   font-size: 19px;
+  color: var(--ink);
   min-height: 48px;
   transition: border-color 0.12s, background 0.12s, transform 0.08s;
 }
 
 .choice:hover:not(:disabled) {
-  border-color: var(--sky);
+  border-color: var(--accent);
   transform: translateY(-1px);
 }
 
@@ -257,11 +267,11 @@ a:focus-visible {
   justify-content: center;
   width: 22px;
   height: 22px;
-  font-family: "Fredoka", "M PLUS Rounded 1c", sans-serif;
+  font-family: 'Outfit', 'Zen Maru Gothic', sans-serif;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   color: #fff;
-  background: var(--sky);
+  background: var(--accent);
   border-radius: 50%;
   margin-right: 11px;
   vertical-align: -3px;
@@ -293,7 +303,7 @@ a:focus-visible {
 
 .reason {
   display: block;
-  font-family: "M PLUS Rounded 1c", sans-serif;
+  font-family: 'Zen Maru Gothic', sans-serif;
   font-size: 13px;
   color: var(--ink-soft);
   margin-top: 5px;
@@ -309,9 +319,9 @@ a:focus-visible {
 }
 
 .verdict {
-  font-family: "Fredoka", "M PLUS Rounded 1c", sans-serif;
+  font-family: 'Outfit', 'Zen Maru Gothic', sans-serif;
   font-size: 17px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 16px 0 2px;
 }
 
@@ -326,9 +336,9 @@ a:focus-visible {
 .point {
   display: inline-block;
   font-size: 12.5px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--ink);
-  background: var(--sun-soft);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 999px;
   padding: 4px 12px;
   margin-bottom: 12px;
@@ -345,17 +355,17 @@ a:focus-visible {
 }
 
 .btn {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  background: var(--theme-btn-grad, linear-gradient(135deg, #0284c7 0%, #38bdf8 100%));
   color: #fff;
   border: none;
   border-radius: var(--radius-sm);
   padding: 14px 18px;
-  font-family: "Fredoka", "M PLUS Rounded 1c", sans-serif;
-  font-weight: 600;
+  font-family: 'Outfit', 'Zen Maru Gothic', sans-serif;
+  font-weight: 700;
   font-size: 15.5px;
   width: 100%;
   min-height: 50px;
-  box-shadow: 0 4px 12px rgba(255, 122, 89, 0.35);
+  box-shadow: 0 4px 16px var(--theme-glow, rgba(56, 189, 248, 0.3));
   transition: transform 0.1s, box-shadow 0.1s;
 }
 
@@ -365,19 +375,18 @@ a:focus-visible {
 
 .btn:active {
   transform: translateY(0) scale(0.98);
-  box-shadow: 0 2px 6px rgba(255, 122, 89, 0.35);
 }
 
 .btn.ghost {
-  background: #fff;
+  background: transparent;
   color: var(--ink);
-  border: 2px solid var(--line);
+  border: 1px solid var(--line);
   box-shadow: none;
 }
 
 .btn.mint {
-  background: linear-gradient(135deg, var(--mint) 0%, var(--mint-2) 100%);
-  box-shadow: 0 4px 12px rgba(47, 203, 156, 0.35);
+  background: linear-gradient(135deg, #059669 0%, #34d399 100%);
+  box-shadow: 0 4px 16px rgba(52, 211, 153, 0.35);
 }
 
 .btn.small {
@@ -400,7 +409,7 @@ a:focus-visible {
 
 .progress {
   height: 8px;
-  background: var(--line);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 999px;
   margin-bottom: 20px;
   overflow: hidden;
@@ -409,7 +418,7 @@ a:focus-visible {
 .progress i {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, var(--sky) 0%, var(--mint) 100%);
+  background: var(--theme-btn-grad, linear-gradient(90deg, var(--sky) 0%, var(--mint) 100%));
   border-radius: 999px;
   transition: width 0.25s ease-out;
 }
@@ -419,20 +428,21 @@ a:focus-visible {
   align-items: center;
   gap: 4px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   border-radius: 999px;
   padding: 3px 10px;
   margin-right: 6px;
 }
 
-.grade-chip.g1 { background: var(--sky-soft); color: #1E5FBF; }
-.grade-chip.g2 { background: var(--sun-soft); color: #B5750A; }
-.grade-chip.g3 { background: var(--violet-soft); color: #6A3FD9; }
+.grade-chip.g1 { background: rgba(96, 165, 250, 0.18); color: #93c5fd; }
+.grade-chip.g2 { background: rgba(251, 191, 36, 0.18); color: #fde68a; }
+.grade-chip.g3 { background: rgba(192, 132, 252, 0.18); color: #d8b4fe; }
 
 table {
   width: 100%;
   border-collapse: collapse;
   font-size: 13.5px;
+  color: var(--ink);
 }
 
 td {
@@ -442,15 +452,15 @@ td {
 
 td.r {
   text-align: right;
-  font-family: "Fredoka", "M PLUS Rounded 1c", sans-serif;
-  font-weight: 600;
+  font-family: 'Outfit', 'Zen Maru Gothic', sans-serif;
+  font-weight: 700;
   color: var(--ink);
   white-space: nowrap;
 }
 
 .bar {
   height: 8px;
-  background: #F1EDE0;
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 999px;
   margin-top: 6px;
   overflow: hidden;
@@ -462,9 +472,9 @@ td.r {
   border-radius: 999px;
 }
 
-.bar i.low { background: linear-gradient(90deg, #FF8A80, var(--ng)); }
-.bar i.mid { background: linear-gradient(90deg, var(--sun), var(--accent)); }
-.bar i.high { background: linear-gradient(90deg, var(--mint), var(--mint-2)); }
+.bar i.low { background: linear-gradient(90deg, #f87171, #ef4444); }
+.bar i.mid { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+.bar i.high { background: linear-gradient(90deg, #34d399, #10b981); }
 
 .stat-emoji {
   margin-right: 3px;
@@ -495,9 +505,10 @@ td.r {
 .dot.miss { background: var(--ng); }
 
 .done-row .count {
-  font-family: "Fredoka", "M PLUS Rounded 1c", sans-serif;
+  font-family: 'Outfit', 'Zen Maru Gothic', sans-serif;
   font-weight: 700;
   font-size: 18px;
+  color: var(--ink);
 }
 
 .link {
@@ -548,90 +559,14 @@ td.r {
   animation: fade-slide-in 0.25s ease-out;
 }
 
-.confetti-container {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 999;
-  overflow: hidden;
-}
-
-.confetti-piece {
-  position: absolute;
-  top: -12px;
-  width: 8px;
-  height: 14px;
-  border-radius: 2px;
-  animation-name: confetti-fall;
-  animation-timing-function: ease-in;
-  animation-fill-mode: forwards;
-}
-
-@keyframes confetti-fall {
-  0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
-  100% { transform: translate(var(--drift, 0px), 100vh) rotate(360deg); opacity: 0.7; }
-}
-
-/* 応援バナー */
-.cheer-banner {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--violet-soft);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  margin-bottom: 14px;
-  font-size: 13px;
-}
-
-.cheer-banner .emoji {
-  font-size: 20px;
-}
-
-/* テーマカラー選択 */
-.theme-picker {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.theme-swatch {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  cursor: pointer;
-  padding: 0;
-}
-
-.theme-swatch.selected {
-  border-color: var(--ink);
-}
-
-.streak-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: rgba(255, 255, 255, 0.25);
-  border-radius: 999px;
-  padding: 3px 10px;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: #fff;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .choice.correct,
   .choice.picked-wrong,
   .answer-block,
   .btn,
-  .choice,
-  .confetti-piece {
+  .choice {
     animation: none !important;
     transition: none !important;
-  }
-  .confetti-container {
-    display: none;
   }
 }
 
