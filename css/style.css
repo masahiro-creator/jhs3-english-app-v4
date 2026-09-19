@@ -1,0 +1,642 @@
+/* ==========================================================================
+   中3英語マスター - エビングハウス忘却曲線＆スノーパートナーズ応援アプリ
+   iPad Touch-First & 9-Color Theme CSS
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Zen+Maru+Gothic:wght@500;700;900&display=swap');
+
+/* --- 9色メンバーカラーテーマ変数の定義 --- */
+:root {
+  /* デフォルト: 目黒さん風 ブラック/シルバー 🖤 */
+  --theme-primary: #38bdf8;
+  --theme-accent: #f43f5e;
+  --theme-bg-start: #0f172a;
+  --theme-bg-end: #1e293b;
+  --theme-card-bg: rgba(30, 41, 59, 0.75);
+  --theme-card-border: rgba(255, 255, 255, 0.12);
+  --theme-glow: rgba(56, 189, 248, 0.25);
+  --theme-text: #f8fafc;
+  --theme-text-sub: #94a3b8;
+  --theme-btn-grad: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+  --theme-active-color: #38bdf8;
+}
+
+/* 🖤 ブラック（目黒蓮さん風） */
+[data-theme="black"] {
+  --theme-primary: #38bdf8;
+  --theme-accent: #fbbf24;
+  --theme-bg-start: #090d16;
+  --theme-bg-end: #171e2e;
+  --theme-card-bg: rgba(23, 30, 46, 0.85);
+  --theme-card-border: rgba(56, 189, 248, 0.2);
+  --theme-glow: rgba(56, 189, 248, 0.3);
+  --theme-btn-grad: linear-gradient(135deg, #1e293b 0%, #475569 100%);
+  --theme-active-color: #38bdf8;
+}
+
+/* 🤍 ホワイト/プラチナ（ラウールさん風） */
+[data-theme="white"] {
+  --theme-primary: #f8fafc;
+  --theme-accent: #38bdf8;
+  --theme-bg-start: #0f172a;
+  --theme-bg-end: #334155;
+  --theme-card-bg: rgba(255, 255, 255, 0.1);
+  --theme-card-border: rgba(255, 255, 255, 0.3);
+  --theme-glow: rgba(248, 250, 252, 0.35);
+  --theme-btn-grad: linear-gradient(135deg, #e2e8f0 0%, #ffffff 100%);
+  --theme-active-color: #ffffff;
+}
+
+/* 💛 イエロー（岩本照さん風） */
+[data-theme="yellow"] {
+  --theme-primary: #fbbf24;
+  --theme-accent: #f59e0b;
+  --theme-bg-start: #1c1917;
+  --theme-bg-end: #292524;
+  --theme-card-bg: rgba(41, 37, 36, 0.85);
+  --theme-card-border: rgba(251, 191, 36, 0.3);
+  --theme-glow: rgba(251, 191, 36, 0.35);
+  --theme-btn-grad: linear-gradient(135deg, #d97706 0%, #fbbf24 100%);
+  --theme-active-color: #fbbf24;
+}
+
+/* 💜 パープル（深澤辰哉さん風） */
+[data-theme="purple"] {
+  --theme-primary: #c084fc;
+  --theme-accent: #e879f9;
+  --theme-bg-start: #1e1b4b;
+  --theme-bg-end: #2e1065;
+  --theme-card-bg: rgba(46, 16, 101, 0.8);
+  --theme-card-border: rgba(192, 132, 252, 0.3);
+  --theme-glow: rgba(192, 132, 252, 0.35);
+  --theme-btn-grad: linear-gradient(135deg, #7e22ce 0%, #c084fc 100%);
+  --theme-active-color: #c084fc;
+}
+
+/* 🩷 ピンク（佐久間大介さん風） */
+[data-theme="pink"] {
+  --theme-primary: #f472b6;
+  --theme-accent: #fb7185;
+  --theme-bg-start: #4c0519;
+  --theme-bg-end: #881337;
+  --theme-card-bg: rgba(136, 19, 55, 0.8);
+  --theme-card-border: rgba(244, 114, 182, 0.3);
+  --theme-glow: rgba(244, 114, 182, 0.35);
+  --theme-btn-grad: linear-gradient(135deg, #be123c 0%, #f472b6 100%);
+  --theme-active-color: #f472b6;
+}
+
+/* 💙 ブルー（渡辺翔太さん風） */
+[data-theme="blue"] {
+  --theme-primary: #60a5fa;
+  --theme-accent: #38bdf8;
+  --theme-bg-start: #0f172a;
+  --theme-bg-end: #1e3a8a;
+  --theme-card-bg: rgba(30, 58, 138, 0.8);
+  --theme-card-border: rgba(96, 165, 250, 0.3);
+  --theme-glow: rgba(96, 165, 250, 0.35);
+  --theme-btn-grad: linear-gradient(135deg, #1d4ed8 0%, #60a5fa 100%);
+  --theme-active-color: #60a5fa;
+}
+
+/* 💚 グリーン（阿部亮平さん風） */
+[data-theme="green"] {
+  --theme-primary: #4ade80;
+  --theme-accent: #34d399;
+  --theme-bg-start: #064e3b;
+  --theme-bg-end: #022c22;
+  --theme-card-bg: rgba(6, 78, 59, 0.8);
+  --theme-card-border: rgba(74, 222, 128, 0.3);
+  --theme-glow: rgba(74, 222, 128, 0.35);
+  --theme-btn-grad: linear-gradient(135deg, #047857 0%, #4ade80 100%);
+  --theme-active-color: #4ade80;
+}
+
+/* 🧡 オレンジ（向井康二さん風） */
+[data-theme="orange"] {
+  --theme-primary: #fb923c;
+  --theme-accent: #f97316;
+  --theme-bg-start: #451a03;
+  --theme-bg-end: #7c2d12;
+  --theme-card-bg: rgba(124, 45, 18, 0.8);
+  --theme-card-border: rgba(251, 146, 60, 0.3);
+  --theme-glow: rgba(251, 146, 60, 0.35);
+  --theme-btn-grad: linear-gradient(135deg, #c2410c 0%, #fb923c 100%);
+  --theme-active-color: #fb923c;
+}
+
+/* ❤️ レッド（宮舘涼太さん風） */
+[data-theme="red"] {
+  --theme-primary: #f87171;
+  --theme-accent: #ef4444;
+  --theme-bg-start: #450a0a;
+  --theme-bg-end: #7f1d1d;
+  --theme-card-bg: rgba(127, 29, 29, 0.8);
+  --theme-card-border: rgba(248, 113, 113, 0.3);
+  --theme-glow: rgba(248, 113, 113, 0.35);
+  --theme-btn-grad: linear-gradient(135deg, #b91c1c 0%, #f87171 100%);
+  --theme-active-color: #f87171;
+}
+
+/* --- ベースリセット & 全体レイアウト --- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+body {
+  font-family: 'Outfit', 'Zen Maru Gothic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(135deg, var(--theme-bg-start), var(--theme-bg-end));
+  color: var(--theme-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  transition: background 0.5s ease, color 0.5s ease;
+}
+
+/* iPad画面いっぱいのコンテナ */
+#app-container {
+  max-width: 1024px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* --- ヘッダー & ナビゲーション --- */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: var(--theme-card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--theme-card-border);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px var(--theme-glow);
+  margin-bottom: 20px;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-badge {
+  font-size: 28px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.app-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(90deg, #ffffff, var(--theme-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.app-subtitle {
+  font-size: 12px;
+  color: var(--theme-text-sub);
+  font-weight: 500;
+}
+
+/* 9色推しカラー選択バー */
+.theme-picker {
+  display: flex;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 6px 12px;
+  border-radius: 30px;
+  border: 1px solid var(--theme-card-border);
+}
+
+.color-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  touch-action: manipulation;
+}
+
+.color-dot:active, .color-dot.active {
+  transform: scale(1.25);
+  border-color: #ffffff;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+}
+
+/* メインナビゲーションタブ */
+.nav-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  background: rgba(15, 23, 42, 0.4);
+  padding: 6px;
+  border-radius: 16px;
+  border: 1px solid var(--theme-card-border);
+  overflow-x: auto;
+}
+
+.nav-tab {
+  flex: 1;
+  min-width: 110px;
+  padding: 14px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  color: var(--theme-text-sub);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  min-height: 48px; /* iPadタッチターゲット基準 */
+}
+
+.nav-tab.active {
+  background: var(--theme-btn-grad);
+  color: #ffffff;
+  box-shadow: 0 4px 20px var(--theme-glow);
+}
+
+/* --- コンテンツエリア --- */
+.tab-content {
+  display: none;
+  flex: 1;
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.tab-content.active {
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- ガラスモフィズムカード共通 --- */
+.glass-card {
+  background: var(--theme-card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--theme-card-border);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  margin-bottom: 20px;
+}
+
+/* --- スノーパートナーズ応援メッセージカード --- */
+.cheer-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--theme-primary);
+  border-radius: 20px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cheer-avatar {
+  font-size: 40px;
+  animation: pulse 2s infinite;
+}
+
+.cheer-text-box {
+  flex: 1;
+}
+
+.cheer-speaker {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--theme-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.cheer-message {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #ffffff;
+}
+
+/* --- 単語/動詞 フラッシュカード --- */
+.flashcard-wrapper {
+  perspective: 1000px;
+  width: 100%;
+  max-width: 540px;
+  height: 320px;
+  margin: 0 auto 24px auto;
+}
+
+.flashcard {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.flashcard.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 28px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--theme-card-bg);
+  border: 2px solid var(--theme-card-border);
+  box-shadow: 0 16px 48px var(--theme-glow);
+}
+
+.card-back {
+  transform: rotateY(180deg);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+}
+
+.card-word {
+  font-size: 38px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.card-phonetic {
+  font-size: 16px;
+  color: var(--theme-primary);
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.card-meaning {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--theme-primary);
+  margin-bottom: 16px;
+}
+
+.card-forms {
+  display: flex;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px 20px;
+  border-radius: 30px;
+  margin-bottom: 12px;
+}
+
+.card-example {
+  font-size: 14px;
+  color: var(--theme-text-sub);
+  text-align: center;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* 音声ボタン 🔊 */
+.audio-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid var(--theme-primary);
+  color: var(--theme-primary);
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+  margin-top: 12px;
+  min-height: 54px;
+}
+
+.audio-btn:active {
+  transform: scale(1.15);
+  background: var(--theme-primary);
+  color: #0f172a;
+}
+
+/* --- クイズ＆ボタンエリア --- */
+.quiz-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.option-btn {
+  background: var(--theme-card-bg);
+  border: 1px solid var(--theme-card-border);
+  color: #ffffff;
+  padding: 18px 20px;
+  border-radius: 18px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.option-btn:active {
+  transform: scale(0.97);
+  background: var(--theme-btn-grad);
+}
+
+.option-btn.correct-highlight {
+  background: #10b981 !important;
+  border-color: #34d399 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 20px rgba(52, 211, 153, 0.6) !important;
+  transform: scale(1.04) !important;
+}
+
+.option-btn.wrong-highlight {
+  background: #ef4444 !important;
+  border-color: #f87171 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.6) !important;
+}
+
+/* 誤答時カードシェイクアニメーション */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-12px); }
+  40%, 80% { transform: translateX(12px); }
+}
+
+.shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+/* 克服完了時のカード縮小消滅アニメーション */
+@keyframes fadeOutScale {
+  0% { opacity: 1; transform: scale(1) translateY(0); }
+  40% { opacity: 0.8; transform: scale(1.04) translateY(-10px); }
+  100% { opacity: 0; transform: scale(0.75) translateY(-35px); filter: blur(6px); }
+}
+
+.fade-out-scale {
+  animation: fadeOutScale 0.65s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* --- プログレスバー & 統計表示 --- */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid var(--theme-card-border);
+  border-radius: 18px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-val {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--theme-primary);
+}
+
+.stat-lbl {
+  font-size: 13px;
+  color: var(--theme-text-sub);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* 紙吹雪 Canvas */
+#confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* アニメーション */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+/* レスポンシブ微調整 (スマホ・タブレット全端末対応) */
+@media (max-width: 640px) {
+  #app-container {
+    padding: 10px;
+  }
+  .app-header {
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+  .theme-picker {
+    padding: 4px 8px;
+  }
+  .color-dot {
+    width: 20px;
+    height: 20px;
+  }
+  .cheer-banner {
+    padding: 12px;
+    margin-bottom: 14px;
+  }
+  .cheer-avatar {
+    font-size: 32px;
+  }
+  .cheer-message {
+    font-size: 13px;
+  }
+  .nav-tabs {
+    gap: 6px;
+    margin-bottom: 14px;
+    padding: 4px;
+  }
+  .nav-tab {
+    min-width: 80px;
+    padding: 10px 6px;
+    font-size: 13px;
+    min-height: 42px;
+  }
+  .flashcard-wrapper {
+    height: 250px;
+    margin-bottom: 16px;
+  }
+  .card-face {
+    padding: 20px 16px;
+  }
+  .card-word {
+    font-size: 26px !important;
+    margin-bottom: 6px !important;
+  }
+  .card-forms {
+    font-size: 13px !important;
+    padding: 4px 12px !important;
+    margin-bottom: 8px !important;
+  }
+  .card-meaning {
+    font-size: 20px !important;
+    margin-bottom: 8px !important;
+  }
+  .quiz-options {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .option-btn {
+    padding: 12px 14px;
+    min-height: 48px;
+    font-size: 15px;
+  }
+}

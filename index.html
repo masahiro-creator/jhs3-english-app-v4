@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>中3英語マスター - エビングハウス忘却曲線＆不規則動詞</title>
+
+  <!-- PWA & Apple Web App Settings -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="中3英語マスター">
+
+  <!-- Google Fonts & Style -->
+  <link rel="stylesheet" href="css/style.css">
+  <!-- 単語ドリル(v3移植)のShadow DOM内で使うフォント -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- 紙吹雪 Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <div id="app-container">
+
+    <!-- ヘッダー -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="logo-badge">❄️</div>
+        <div>
+          <h1 class="app-title">中3英語マスター</h1>
+          <p class="app-subtitle">エビングハウス忘却曲線 ＆ 不規則動詞特訓</p>
+        </div>
+      </div>
+
+      <!-- 9色推しカラー選択 ＆ 音声コントロール -->
+      <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+          <span style="font-size: 11px; font-weight: 700; color: var(--theme-text-sub);">🔊 発音コントロール</span>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <button id="auto-play-btn" style="padding: 6px 12px; font-size: 12px; font-weight: 700; border-radius: 16px; border: 1px solid var(--theme-card-border); background: var(--theme-btn-grad); color: #fff; cursor: pointer;" onclick="window.AudioEngine.toggleAutoPlay()">🔊 自動音声: ON</button>
+            <div style="display: flex; gap: 4px; background: rgba(0, 0, 0, 0.2); padding: 4px; border-radius: 20px; border: 1px solid var(--theme-card-border);">
+              <button class="speed-btn" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: transparent; color: #fff; cursor: pointer;" onclick="window.AudioEngine.setRate(1.2); this.parentNode.querySelectorAll('button').forEach(b => b.style.background='transparent'); this.style.background='var(--theme-btn-grad)';">🐢 ゆっくり</button>
+              <button class="speed-btn" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: var(--theme-btn-grad); color: #fff; cursor: pointer;" onclick="window.AudioEngine.setRate(1.5); this.parentNode.querySelectorAll('button').forEach(b => b.style.background='transparent'); this.style.background='var(--theme-btn-grad)';">✨ 標準</button>
+              <button class="speed-btn" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: transparent; color: #fff; cursor: pointer;" onclick="window.AudioEngine.setRate(1.8); this.parentNode.querySelectorAll('button').forEach(b => b.style.background='transparent'); this.style.background='var(--theme-btn-grad)';">🐰 早め</button>
+            </div>
+            <div style="display: flex; gap: 4px; background: rgba(0, 0, 0, 0.2); padding: 4px; border-radius: 20px; border: 1px solid var(--theme-card-border);">
+              <button class="voice-btn" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: var(--theme-btn-grad); color: #fff; cursor: pointer;" onclick="window.AudioEngine.setVoice('us-female'); this.parentNode.querySelectorAll('button').forEach(b => b.style.background='transparent'); this.style.background='var(--theme-btn-grad)';">🇺🇸👩</button>
+              <button class="voice-btn" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: transparent; color: #fff; cursor: pointer;" onclick="window.AudioEngine.setVoice('us-male'); this.parentNode.querySelectorAll('button').forEach(b => b.style.background='transparent'); this.style.background='var(--theme-btn-grad)';">🇺🇸👨</button>
+              <button class="voice-btn" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: transparent; color: #fff; cursor: pointer;" onclick="window.AudioEngine.setVoice('gb-female'); this.parentNode.querySelectorAll('button').forEach(b => b.style.background='transparent'); this.style.background='var(--theme-btn-grad)';">🇬🇧👩</button>
+              <button class="voice-btn" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: transparent; color: #fff; cursor: pointer;" onclick="window.AudioEngine.setVoice('gb-male'); this.parentNode.querySelectorAll('button').forEach(b => b.style.background='transparent'); this.style.background='var(--theme-btn-grad)';">🇬🇧👨</button>
+              <button class="voice-btn" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: transparent; color: #fff; cursor: pointer;" onclick="window.AudioEngine.setVoice('chirp-female'); this.parentNode.querySelectorAll('button').forEach(b => b.style.background='transparent'); this.style.background='var(--theme-btn-grad)';">✨👩</button>
+              <button class="voice-btn" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: transparent; color: #fff; cursor: pointer;" onclick="window.AudioEngine.setVoice('chirp-male'); this.parentNode.querySelectorAll('button').forEach(b => b.style.background='transparent'); this.style.background='var(--theme-btn-grad)';">✨👨</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+          <span style="font-size: 11px; font-weight: 700; color: var(--theme-text-sub);">🎨 推しカラーテーマ</span>
+          <div class="theme-picker" id="theme-picker-container"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- スノーパートナーズ熱い応援メッセージバナー -->
+    <div class="cheer-banner">
+      <div class="cheer-avatar">☃️</div>
+      <div class="cheer-text-box">
+        <div class="cheer-speaker">SNOW PARTNERS CHEER SQUAD</div>
+        <div class="cheer-message" id="cheer-banner-message">今日も継続できてて最高！第一志望へ向かって一緒に駆け抜けよう！🔥</div>
+      </div>
+    </div>
+
+    <!-- メインナビゲーションタブ -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-tab="dashboard" onclick="window.App.switchTab('dashboard')">
+        🏠 ダッシュボード
+      </button>
+      <button class="nav-tab" data-tab="verbs" onclick="window.App.switchTab('verbs')">
+        🔥 不規則動詞
+      </button>
+      <button class="nav-tab" data-tab="words" onclick="window.App.switchTab('words')">
+        📚 中学英単語
+      </button>
+      <button class="nav-tab" data-tab="weak" onclick="window.App.switchTab('weak')">
+        🎯 弱点克服
+      </button>
+    </nav>
+
+    <!-- タブコンテンツエリア -->
+    <main style="flex: 1; display: flex; flex-direction: column;">
+      <section id="tab-dashboard" class="tab-content active"></section>
+      <section id="tab-srs" class="tab-content"></section>
+      <section id="tab-verbs" class="tab-content"></section>
+      <section id="tab-words" class="tab-content"></section>
+      <section id="tab-weak" class="tab-content"></section>
+    </main>
+
+  </div>
+
+  <!-- スクリプト群 (依存関係の順序で読み込み) -->
+  <script src="js/data/verbs.js"></script>
+  <script src="js/data/audioManifest.js"></script>
+  <script src="js/data/audioManifestMale.js"></script>
+  <script src="js/data/audioManifestGbA.js"></script>
+  <script src="js/data/audioManifestGbB.js"></script>
+  <script src="js/data/audioManifestChirpFemale.js"></script>
+  <script src="js/data/audioManifestChirpMale.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/srsEngine.js"></script>
+  <script src="js/components/themeManager.js"></script>
+  <script src="js/components/cheering.js"></script>
+  <script src="js/components/dashboard.js"></script>
+  <script src="js/components/verbSection.js"></script>
+  <script src="js/components/weakSection.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- 単語ドリル (v3移植・自己完結モジュール、Shadow DOMで #tab-words にマウント) -->
+  <script type="module" src="js/worddrill/entry.js"></script>
+
+</body>
+</html>

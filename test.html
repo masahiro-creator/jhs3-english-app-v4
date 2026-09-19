@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iPhone音声テスト</title>
+</head>
+<body style="font-family: sans-serif; padding: 20px; background: #f0f4f8;">
+  <h2 style="color: #333;">iPhone音声テスト</h2>
+  <p>リストから声を選んで「テスト再生」を押してください。</p>
+  
+  <select id="voice-select" style="font-size: 16px; padding: 10px; width: 100%; margin-bottom: 20px; border-radius: 8px;">
+    <option value="">音声を読み込み中...</option>
+  </select>
+  
+  <button onclick="speakTest()" style="font-size: 18px; padding: 12px 20px; background: #007AFF; color: white; border: none; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer;">
+    🔊 テスト再生
+  </button>
+
+  <script>
+    const select = document.getElementById('voice-select');
+    let voices = [];
+
+    function loadVoices() {
+      // 英語の音声だけを抽出
+      voices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
+      if (voices.length > 0) {
+        select.innerHTML = '';
+        voices.forEach((voice, index) => {
+          const option = document.createElement('option');
+          option.value = index;
+          option.textContent = voice.name;
+          select.appendChild(option);
+        });
+      }
+    }
+
+    // iOS向けの音声読み込み対策
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+
+    function speakTest() {
+      if (voices.length === 0) return alert("音声が読み込まれていません");
+      // 不規則動詞のテスト発音
+      const utterance = new SpeechSynthesisUtterance("go, went, gone. This is a test.");
+      utterance.voice = voices[select.value];
+      utterance.rate = 0.9; // 実際のアプリと同じ速度
+      window.speechSynthesis.speak(utterance);
+    }
+  </script>
+</body>
+</html>
