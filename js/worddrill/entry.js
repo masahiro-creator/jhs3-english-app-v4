@@ -301,6 +301,7 @@ export function mountWordDrill(hostElement) {
         newPerDay: progress.newPerDay,
         newPerDayOptions: NEW_PER_DAY_OPTIONS,
         totalCount: DECK.items.length,
+        masteredCount: computeMasteredCount(progress),
         weakCount: getWeakItems(DECK.items, progress).length,
       };
     },
