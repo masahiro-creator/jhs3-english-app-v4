@@ -6,7 +6,8 @@ import { WORDS } from "./data/words.js";
 import {
   todayString,
   resetDailyCountIfNeeded,
-  buildSession,
+  buildReviewSession,
+  buildNewSession,
   requeueOnMiss,
   applyAnswer,
   getDueQuestions,
@@ -84,6 +85,8 @@ export function mountWordDrill(hostElement) {
 
   function dueFresh() {
     const today = todayString();
+    // 日付が変わっていたら新規枠をリセットしてから件数を出す（表示のたびに最新化する）
+    progress = resetDailyCountIfNeeded(progress, today);
     return {
       dueCount: getDueQuestions(DECK.items, progress, today).length,
       freshCount: Math.min(getUnseenQuestions(DECK.items, progress).length, countRemainingNewSlots(progress)),
@@ -201,11 +204,18 @@ export function mountWordDrill(hostElement) {
     return true;
   }
 
-  function startSession() {
+  function startReviewSession() {
     const today = todayString();
     progress = resetDailyCountIfNeeded(progress, today);
     isWeakSession = false;
-    return beginQuiz(buildSession(DECK.items, progress, today));
+    return beginQuiz(buildReviewSession(DECK.items, progress, today));
+  }
+
+  function startNewSession() {
+    const today = todayString();
+    progress = resetDailyCountIfNeeded(progress, today);
+    isWeakSession = false;
+    return beginQuiz(buildNewSession(DECK.items, progress));
   }
 
   function startWeakSession() {
@@ -305,7 +315,8 @@ export function mountWordDrill(hostElement) {
         weakCount: getWeakItems(DECK.items, progress).length,
       };
     },
-    startSession,
+    startReviewSession,
+    startNewSession,
     startWeakSession,
     setNewPerDay,
   };

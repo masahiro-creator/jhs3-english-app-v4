@@ -9,7 +9,7 @@ window.StorageEngine = {
     try {
       const raw = localStorage.getItem(this.STORAGE_KEY);
       if (!raw) return this.getDefaultData();
-      return JSON.parse(raw);
+      return { ...this.getDefaultData(), ...JSON.parse(raw) };
     } catch (e) {
       console.error('Storage parse error:', e);
       return this.getDefaultData();
@@ -36,7 +36,10 @@ window.StorageEngine = {
       items: {},            // id -> { level, nextReview, total, correct, wrong, lastTested }
       streak: 0,            // 連続学習日数
       lastStudiedDate: '',  // 最終学習日 (YYYY-MM-DD)
-      xp: 0                 // 学習経験値
+      xp: 0,                // 学習経験値
+      newPerDayVerbs: 10,   // 1日に出す新しい動詞数（単語ドリルと同じ仕組み）
+      newDoneTodayVerbs: 0, // 今日すでに新規で出した動詞数
+      lastNewVerbDate: ''   // newDoneTodayVerbsを最後にリセットした日
     };
   },
 
@@ -56,12 +59,20 @@ window.StorageEngine = {
   },
 
   /**
+   * まだ一度も解いたことがないアイテムかどうか
+   */
+  isUnseen(id) {
+    return this.getData().items[id] === undefined;
+  },
+
+  /**
    * 回答結果を記録＆記憶レベルを計算
    * @param {string} id アイテムID
    * @param {boolean} isCorrect 正解かどうか
    */
   recordResult(id, isCorrect) {
     const data = this.getData();
+    const wasUnseen = data.items[id] === undefined;
     const item = data.items[id] || {
       level: 0,
       nextReview: 0,
@@ -90,6 +101,7 @@ window.StorageEngine = {
 
     data.items[id] = item;
     data.xp += isCorrect ? 10 : 2; // XP獲得
+    if (wasUnseen) data.newDoneTodayVerbs = (data.newDoneTodayVerbs || 0) + 1;
     this.updateStreak(data);
     this.saveData(data);
 
@@ -136,5 +148,36 @@ window.StorageEngine = {
     const data = this.getData();
     data.memberColor = colorKey;
     this.saveData(data);
+  },
+
+  /**
+   * 1日に出す新しい動詞数（単語ドリルの「1日に出す新しい語」と同じ考え方）
+   */
+  getNewPerDayVerbs() {
+    return this.getData().newPerDayVerbs;
+  },
+
+  setNewPerDayVerbs(value) {
+    const data = this.getData();
+    data.newPerDayVerbs = value;
+    this.saveData(data);
+  },
+
+  /** 日付が変わっていたら「今日すでに新規で出した動詞数」をリセットする */
+  resetDailyVerbCountIfNeeded() {
+    const data = this.getData();
+    const todayStr = new Date().toISOString().split('T')[0];
+    if (data.lastNewVerbDate !== todayStr) {
+      data.lastNewVerbDate = todayStr;
+      data.newDoneTodayVerbs = 0;
+      this.saveData(data);
+    }
+  },
+
+  /** 今日あと何語、新しい動詞を出せるか（日付が変わっていれば自動でリセットする） */
+  countRemainingNewVerbSlots() {
+    this.resetDailyVerbCountIfNeeded();
+    const data = this.getData();
+    return Math.max(0, (data.newPerDayVerbs || 10) - (data.newDoneTodayVerbs || 0));
   }
 };

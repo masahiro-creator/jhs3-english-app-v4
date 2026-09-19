@@ -89,6 +89,17 @@ export function buildSession(questions, progress, today, shuffle = shuffleArray)
   return shuffle([...due, ...fresh]);
 }
 
+/** 復習分（due <= today）のみのセッションを組み立てる */
+export function buildReviewSession(questions, progress, today, shuffle = shuffleArray) {
+  return shuffle(getDueQuestions(questions, progress, today));
+}
+
+/** 新規分（今日の新規枠ぶんの未学習カード）のみのセッションを組み立てる */
+export function buildNewSession(questions, progress, shuffle = shuffleArray) {
+  const fresh = getUnseenQuestions(questions, progress).slice(0, countRemainingNewSlots(progress));
+  return shuffle(fresh);
+}
+
 /**
  * 不正解のとき、同一セッションの末尾に同じ問題を積み直す。
  * @param {Array} session

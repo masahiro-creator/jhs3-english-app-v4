@@ -20,7 +20,7 @@ window.SRSEngine = {
   },
 
   /**
-   * 復習期限が来ているかチェック
+   * 復習期限が来ているかチェック（すでに一度学習したアイテムが対象）
    */
   isDue(itemState, now = Date.now()) {
     if (!itemState || itemState.level === 0) return true;
@@ -28,11 +28,27 @@ window.SRSEngine = {
   },
 
   /**
-   * 不規則動詞から「今日復習すべき問題リスト」を抽出
+   * まだ一度も解いたことがない動詞
+   */
+  getUnseenItems(verbs = []) {
+    return verbs.filter(v => window.StorageEngine.isUnseen(v.id));
+  },
+
+  /**
+   * 今日の新規枠に収まる分だけ、未学習の動詞を返す
+   */
+  getNewItemsForToday(verbs = []) {
+    const slots = window.StorageEngine.countRemainingNewVerbSlots();
+    return this.getUnseenItems(verbs).slice(0, slots);
+  },
+
+  /**
+   * 一度は学習済みで、今日復習すべき動詞を抽出（未学習は含まない）
    */
   getDueItems(verbs = []) {
     const now = Date.now();
     const dueVerbs = verbs.filter(v => {
+      if (window.StorageEngine.isUnseen(v.id)) return false;
       const state = window.StorageEngine.getItem(v.id);
       return this.isDue(state, now);
     });
@@ -64,16 +80,15 @@ window.SRSEngine = {
     let totalItems = verbs.length;
     let totalTested = 0;
     let masteredCount = 0; // Level 4以上
-    let dueCount = 0;
-    const now = Date.now();
 
     verbs.forEach(item => {
+      if (window.StorageEngine.isUnseen(item.id)) return;
       const state = window.StorageEngine.getItem(item.id);
       if (state.total > 0) totalTested++;
       if (state.level >= 4) masteredCount++;
-      if (this.isDue(state, now)) dueCount++;
     });
 
+    const dueCount = this.getDueItems(verbs).totalDue;
     const retentionRate = totalTested > 0 ? Math.round((masteredCount / totalItems) * 100) : 0;
 
     return {

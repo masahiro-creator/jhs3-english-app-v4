@@ -60,16 +60,26 @@ window.App = {
   },
 
   /**
-   * エビングハウス忘却曲線 復習セッションの開始（不規則動詞）
+   * 今日復習すべき（学習済みで期限が来た）動詞のセッションを開始
    */
-  startSRSSession() {
+  startReviewVerbSession() {
     const verbs = window.IRREGULAR_VERBS || [];
-    const dueObj = window.SRSEngine.getDueItems(verbs);
+    const queue = window.SRSEngine.getDueItems(verbs).dueVerbs.map(v => ({ ...v, itemType: 'verb' }));
+    this._beginVerbSession(queue, '今日の復習はすべて完了しています！素晴らしい集中力です！🎉');
+  },
 
-    const queue = dueObj.dueVerbs.map(v => ({ ...v, itemType: 'verb' }));
+  /**
+   * 今日の新規枠ぶん、まだ学習していない動詞のセッションを開始
+   */
+  startNewVerbSession() {
+    const verbs = window.IRREGULAR_VERBS || [];
+    const queue = window.SRSEngine.getNewItemsForToday(verbs).map(v => ({ ...v, itemType: 'verb' }));
+    this._beginVerbSession(queue, '今日の新規動詞はすべて学習済みです！素晴らしい集中力です！🎉');
+  },
 
+  _beginVerbSession(queue, emptyMessage) {
     if (queue.length === 0) {
-      alert('今日の忘却曲線復習はすべて完了しています！素晴らしい集中力です！🎉');
+      alert(emptyMessage);
       return;
     }
 
