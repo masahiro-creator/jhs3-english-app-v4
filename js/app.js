@@ -18,8 +18,22 @@ window.App = {
     window.VerbSectionComponent.init('tab-verbs');
     // 「単語」タブは js/worddrill/entry.js が独自にShadow DOMへマウントする（v3移植の単語ドリル）
 
+    // 発音速度ボタンの選択状態を、保存されている設定に同期
+    this.syncSpeedButtons();
+
     // 初期タブ表示
     this.switchTab('dashboard');
+  },
+
+  /**
+   * ヘッダーの発音速度ボタンの見た目を現在の設定に合わせる
+   * （不規則動詞・単語ドリル共通の設定）
+   */
+  syncSpeedButtons() {
+    document.querySelectorAll('#speed-btn-group .speed-btn').forEach(btn => {
+      const isActive = Number(btn.dataset.rate) === window.AudioEngine.speechRate;
+      btn.style.background = isActive ? 'var(--theme-btn-grad)' : 'transparent';
+    });
   },
 
   switchTab(tabId) {
@@ -160,6 +174,12 @@ window.App = {
       this.renderSRSStep();
     }, isCorrect ? 1300 : 2300);
   }
+};
+
+// 発音速度変更（ヘッダーのボタンから呼ばれる。不規則動詞・単語ドリル共通）
+window.setSpeechRate = function (rate) {
+  window.AudioEngine.setRate(rate);
+  window.App.syncSpeedButtons();
 };
 
 // DOMロード完了時の初期化

@@ -1,5 +1,7 @@
 // 単語ドリル (v3移植) を #tab-words 内にShadow DOMでマウントするモジュール。
 // v2本体の見た目・不規則動詞・弱点克服・応援バナー等には一切影響しない自己完結モジュール。
+// 「今日の復習・新しい語の開始」「弱点克服」「1日に出す新しい語数」はダッシュボードに
+// 統合されているため、window.WordDrill 経由でダッシュボードから呼び出せるようにしている。
 import { WORDS } from "./data/words.js";
 import {
   todayString,
@@ -15,11 +17,12 @@ import {
   computeMasteredCount,
   getWeakItems,
   shuffleArray,
+  NEW_PER_DAY_OPTIONS,
 } from "./lib/scheduler.js";
 import { loadProgress, saveProgress, STORAGE_KEYS } from "./lib/storage.js";
 import { loadHistory, saveHistory, recordAnswer } from "./lib/historyLog.js";
 import { pickDistractors } from "./lib/distractors.js";
-import { speak, loadPlaybackRate, savePlaybackRate } from "./lib/speech.js";
+import { speak } from "./lib/speech.js";
 import { renderHomeScreen } from "./components/home.js";
 import { renderVocabQuizScreen } from "./components/vocabQuiz.js";
 import { renderStatsScreen } from "./components/stats.js";
@@ -65,7 +68,6 @@ export function mountWordDrill(hostElement) {
 
   let progress = loadProgress(DECK.storageKey);
   let history = loadHistory();
-  let playbackRate = loadPlaybackRate();
 
   let screen = "home";
   let session = [];
@@ -98,22 +100,14 @@ export function mountWordDrill(hostElement) {
 
   function render() {
     if (screen === "home") {
-      const { dueCount, freshCount } = dueFresh();
       wrap.innerHTML = renderHomeScreen({
-        dueCount,
-        freshCount,
         stageCounts: computeStageCounts(progress),
         learnedCount: Object.keys(progress.cards).length,
-        newPerDay: progress.newPerDay,
         totalQuestions: DECK.items.length,
         deckTitle: DECK.title,
         deckEmoji: DECK.emoji,
         unitLabel: DECK.unitLabel,
-        newUnitLabel: DECK.newUnitLabel,
         subtitle: DECK.subtitle,
-        weakCount: getWeakItems(DECK.items, progress).length,
-        hasWordList: true,
-        playbackRate,
       });
     } else if (screen === "quiz") {
       const word = session[idx];
@@ -195,7 +189,7 @@ export function mountWordDrill(hostElement) {
     if (items.length === 0) {
       screen = "home";
       render();
-      return;
+      return false;
     }
     session = items;
     idx = 0;
@@ -204,18 +198,19 @@ export function mountWordDrill(hostElement) {
     prepareVocabChoices();
     screen = "quiz";
     render();
+    return true;
   }
 
   function startSession() {
     const today = todayString();
     progress = resetDailyCountIfNeeded(progress, today);
     isWeakSession = false;
-    beginQuiz(buildSession(DECK.items, progress, today));
+    return beginQuiz(buildSession(DECK.items, progress, today));
   }
 
   function startWeakSession() {
     isWeakSession = true;
-    beginQuiz(shuffleArray(getWeakItems(DECK.items, progress)));
+    return beginQuiz(shuffleArray(getWeakItems(DECK.items, progress)));
   }
 
   function pickChoice(index) {
@@ -260,24 +255,14 @@ export function mountWordDrill(hostElement) {
   function setNewPerDay(value) {
     progress = { ...progress, newPerDay: value };
     saveProgress(DECK.storageKey, progress);
-    render();
-  }
-
-  function setRate(rate) {
-    playbackRate = rate;
-    savePlaybackRate(playbackRate);
-    render();
+    if (screen === "home") render();
   }
 
   shadow.addEventListener("click", (event) => {
     const target = event.target.closest("[data-action]");
     if (!target) return;
     const action = target.dataset.action;
-    if (action === "start") startSession();
-    else if (action === "start-weak") startWeakSession();
-    else if (action === "set-new-per-day") setNewPerDay(Number(target.dataset.value));
-    else if (action === "set-rate") setRate(Number(target.dataset.rate));
-    else if (action === "quit-quiz") quitQuiz();
+    if (action === "quit-quiz") quitQuiz();
     else if (action === "go-stats") {
       screen = "stats";
       render();
@@ -306,9 +291,32 @@ export function mountWordDrill(hostElement) {
   });
 
   render();
+
+  return {
+    getSummary() {
+      const { dueCount, freshCount } = dueFresh();
+      return {
+        dueCount,
+        freshCount,
+        newPerDay: progress.newPerDay,
+        newPerDayOptions: NEW_PER_DAY_OPTIONS,
+        totalCount: DECK.items.length,
+        weakCount: getWeakItems(DECK.items, progress).length,
+      };
+    },
+    startSession,
+    startWeakSession,
+    setNewPerDay,
+  };
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   const host = document.getElementById("tab-words");
-  if (host) mountWordDrill(host);
+  if (!host) return;
+  window.WordDrill = mountWordDrill(host);
+  // ダッシュボードの「今日の単語ミッション」カードはこのモジュールの読み込み完了後に
+  // 初めて正しい数字を出せるため、既にダッシュボードが表示済みなら再描画しておく
+  if (window.DashboardComponent && window.App && window.App.currentTab === "dashboard") {
+    window.DashboardComponent.render("tab-dashboard");
+  }
 });

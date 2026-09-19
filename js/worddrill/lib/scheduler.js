@@ -18,7 +18,7 @@
 /** box 0〜5 に対応する、次回出題までの日数 */
 export const REVIEW_INTERVAL_DAYS = [0, 1, 3, 7, 14, 30];
 
-export const NEW_PER_DAY_OPTIONS = [5, 10, 15, 20];
+export const NEW_PER_DAY_OPTIONS = [5, 10, 15, 20, 30, 40];
 
 /** @param {Date} date @returns {string} "YYYY-MM-DD" */
 export function formatDate(date) {

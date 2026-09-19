@@ -37,18 +37,10 @@
           <span style="font-size: 11px; font-weight: 700; color: var(--theme-text-sub);">🔊 発音コントロール</span>
           <div style="display: flex; gap: 6px; align-items: center;">
             <button id="auto-play-btn" style="padding: 6px 12px; font-size: 12px; font-weight: 700; border-radius: 16px; border: 1px solid var(--theme-card-border); background: var(--theme-btn-grad); color: #fff; cursor: pointer;" onclick="window.AudioEngine.toggleAutoPlay()">🔊 自動音声: ON</button>
-            <div style="display: flex; gap: 4px; background: rgba(0, 0, 0, 0.2); padding: 4px; border-radius: 20px; border: 1px solid var(--theme-card-border);">
-              <button class="speed-btn" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: transparent; color: #fff; cursor: pointer;" onclick="window.AudioEngine.setRate(1.2); this.parentNode.querySelectorAll('button').forEach(b => b.style.background='transparent'); this.style.background='var(--theme-btn-grad)';">🐢 ゆっくり</button>
-              <button class="speed-btn" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: var(--theme-btn-grad); color: #fff; cursor: pointer;" onclick="window.AudioEngine.setRate(1.5); this.parentNode.querySelectorAll('button').forEach(b => b.style.background='transparent'); this.style.background='var(--theme-btn-grad)';">✨ 標準</button>
-              <button class="speed-btn" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: transparent; color: #fff; cursor: pointer;" onclick="window.AudioEngine.setRate(1.8); this.parentNode.querySelectorAll('button').forEach(b => b.style.background='transparent'); this.style.background='var(--theme-btn-grad)';">🐰 早め</button>
-            </div>
-            <div style="display: flex; gap: 4px; background: rgba(0, 0, 0, 0.2); padding: 4px; border-radius: 20px; border: 1px solid var(--theme-card-border);">
-              <button class="voice-btn" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: var(--theme-btn-grad); color: #fff; cursor: pointer;" onclick="window.AudioEngine.setVoice('us-female'); this.parentNode.querySelectorAll('button').forEach(b => b.style.background='transparent'); this.style.background='var(--theme-btn-grad)';">🇺🇸👩</button>
-              <button class="voice-btn" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: transparent; color: #fff; cursor: pointer;" onclick="window.AudioEngine.setVoice('us-male'); this.parentNode.querySelectorAll('button').forEach(b => b.style.background='transparent'); this.style.background='var(--theme-btn-grad)';">🇺🇸👨</button>
-              <button class="voice-btn" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: transparent; color: #fff; cursor: pointer;" onclick="window.AudioEngine.setVoice('gb-female'); this.parentNode.querySelectorAll('button').forEach(b => b.style.background='transparent'); this.style.background='var(--theme-btn-grad)';">🇬🇧👩</button>
-              <button class="voice-btn" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: transparent; color: #fff; cursor: pointer;" onclick="window.AudioEngine.setVoice('gb-male'); this.parentNode.querySelectorAll('button').forEach(b => b.style.background='transparent'); this.style.background='var(--theme-btn-grad)';">🇬🇧👨</button>
-              <button class="voice-btn" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: transparent; color: #fff; cursor: pointer;" onclick="window.AudioEngine.setVoice('chirp-female'); this.parentNode.querySelectorAll('button').forEach(b => b.style.background='transparent'); this.style.background='var(--theme-btn-grad)';">✨👩</button>
-              <button class="voice-btn" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: transparent; color: #fff; cursor: pointer;" onclick="window.AudioEngine.setVoice('chirp-male'); this.parentNode.querySelectorAll('button').forEach(b => b.style.background='transparent'); this.style.background='var(--theme-btn-grad)';">✨👨</button>
+            <div id="speed-btn-group" style="display: flex; gap: 4px; background: rgba(0, 0, 0, 0.2); padding: 4px; border-radius: 20px; border: 1px solid var(--theme-card-border);">
+              <button class="speed-btn" data-rate="1.2" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: transparent; color: #fff; cursor: pointer;" onclick="window.setSpeechRate(1.2)">🐢 ゆっくり</button>
+              <button class="speed-btn" data-rate="1.5" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: transparent; color: #fff; cursor: pointer;" onclick="window.setSpeechRate(1.5)">✨ 標準</button>
+              <button class="speed-btn" data-rate="1.8" style="padding: 4px 8px; font-size: 11px; border-radius: 12px; border: none; background: transparent; color: #fff; cursor: pointer;" onclick="window.setSpeechRate(1.8)">🐰 早め</button>
             </div>
           </div>
         </div>
@@ -99,11 +91,6 @@
   <!-- スクリプト群 (依存関係の順序で読み込み) -->
   <script src="js/data/verbs.js"></script>
   <script src="js/data/audioManifest.js"></script>
-  <script src="js/data/audioManifestMale.js"></script>
-  <script src="js/data/audioManifestGbA.js"></script>
-  <script src="js/data/audioManifestGbB.js"></script>
-  <script src="js/data/audioManifestChirpFemale.js"></script>
-  <script src="js/data/audioManifestChirpMale.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/srsEngine.js"></script>

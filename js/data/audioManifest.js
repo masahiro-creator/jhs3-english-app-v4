@@ -1,4 +1,4 @@
-// 自動生成ファイル: scripts/generate-audio.js で作成 (声: en-US-Neural2-F)
+// 自動生成ファイル: scripts/generate-audio.js で作成 (声: en-GB-Neural2-A)
 // Google Cloud Text-to-Speechで事前生成した音声の (発音テキスト -> mp3パス) マッピング
 window.AUDIO_MANIFEST = {
   "cut, cut, cut.": {

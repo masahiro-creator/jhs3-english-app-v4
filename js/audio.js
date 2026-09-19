@@ -1,40 +1,22 @@
 // 発音再生モジュール
-// 全ての単語・例文・不規則動詞はGoogle Cloud TTSで事前生成した音声ファイルを再生する。
-// 選択できる声(6種):
-//   us-female (デフォルト): en-US-Neural2-F      -> audio/,              js/data/audioManifest.js
-//   us-male:               en-US-Neural2-D      -> audio-male/,         js/data/audioManifestMale.js
-//   gb-female:              en-GB-Neural2-A      -> audio-gb-a/,         js/data/audioManifestGbA.js
-//   gb-male:                en-GB-Neural2-B      -> audio-gb-b/,         js/data/audioManifestGbB.js
-//   chirp-female:           en-US-Chirp3-HD-Sulafat -> audio-chirp-female/, js/data/audioManifestChirpFemale.js
-//   chirp-male:             en-US-Chirp3-HD-Orus    -> audio-chirp-male/,   js/data/audioManifestChirpMale.js
-// Chirp3-HD系のみ、不規則動詞3活用を単語ごとに個別生成→固定間隔で結合する方式
-// (scripts/generate-audio-chirp.js)で作っている。1回のAPI呼び出しで
-// "put, put, put." のように読ませると冒頭の無音がランダムにばらついてしまうため。
-// 端末やブラウザに依存する声のばらつきをなくすため、Web Speech APIへの
-// フォールバックは行わない。
+// 単語・例文・不規則動詞はすべてGoogle Cloud TTS(en-GB-Neural2-A)で事前生成した
+// 音声ファイルを再生する。声は1種類のみ。音声速度はアプリ全体で共通の設定を使う。
+const RATE_KEY = 'jhs3_english_app_rate_v1';
+
 window.AudioEngine = {
-  speechRate: 1.5, // 聞き取りやすいクリアな速度（標準ボタンと同じ1.5倍。単語・不規則動詞3活用に適用）
+  speechRate: 1.5, // 聞き取りやすいクリアな速度（標準ボタンと同じ1.5倍。単語ドリル・不規則動詞3活用に共通適用）
   exampleRateScale: 0.675, // 例文は単語より情報量が多く速く感じるため、speechRateにこの倍率をかけて再生
   autoPlay: true,   // 単語切り替え時の自動発音再生 (デフォルト: ON)
-  voiceId: 'us-female', // 'us-female' (デフォルト) / 'us-male' / 'gb-female' / 'gb-male' / 'chirp-female' / 'chirp-male'
 
   _currentAudio: null,
 
-  _voiceManifestGetters: {
-    'us-female': () => window.AUDIO_MANIFEST,
-    'us-male': () => window.AUDIO_MANIFEST_MALE,
-    'gb-female': () => window.AUDIO_MANIFEST_GB_A,
-    'gb-male': () => window.AUDIO_MANIFEST_GB_B,
-    'chirp-female': () => window.AUDIO_MANIFEST_CHIRP_FEMALE,
-    'chirp-male': () => window.AUDIO_MANIFEST_CHIRP_MALE,
-  },
-
-  /**
-   * 現在選択中の声のmanifestを返す
-   */
-  _getManifest() {
-    const getter = this._voiceManifestGetters[this.voiceId] || this._voiceManifestGetters['us-female'];
-    return getter();
+  init() {
+    try {
+      const saved = Number(localStorage.getItem(RATE_KEY));
+      if (saved) this.speechRate = saved;
+    } catch {
+      // 読み込み失敗時は既定値のまま
+    }
   },
 
   /**
@@ -68,8 +50,7 @@ window.AudioEngine = {
     const cleanText = text.replace(/~ing|~|\(.*\)/g, '').replace(/\//g, ' ').trim();
     const baseRate = customRate || this.speechRate;
 
-    const manifest = this._getManifest();
-    const entry = manifest && manifest[cleanText];
+    const entry = window.AUDIO_MANIFEST && window.AUDIO_MANIFEST[cleanText];
     if (!entry) {
       console.warn(`事前生成音声が見つかりません: "${cleanText}"`);
       if (onEnd) onEnd();
@@ -128,15 +109,16 @@ window.AudioEngine = {
 
   /**
    * 音声速度設定 (1.2 = ゆっくり, 1.5 = 標準クリア, 1.8 = 早め)
+   * アプリ全体（不規則動詞・単語ドリル）で共通の設定として保存する。
    */
   setRate(rate) {
     this.speechRate = rate;
-  },
-
-  /**
-   * 声を切り替え ('us-female' / 'us-male' / 'gb-female' / 'gb-male')
-   */
-  setVoice(voiceId) {
-    this.voiceId = this._voiceManifestGetters[voiceId] ? voiceId : 'us-female';
+    try {
+      localStorage.setItem(RATE_KEY, String(rate));
+    } catch {
+      // 保存に失敗しても続行する
+    }
   }
 };
+
+window.AudioEngine.init();

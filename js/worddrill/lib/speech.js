@@ -1,35 +1,16 @@
 import { AUDIO_MANIFEST } from "../data/audioManifest.js";
 
-const RATE_KEY = "jhs3-eigo-anaume-rate";
-export const PLAYBACK_RATES = [0.75, 1, 1.25];
-const DEFAULT_RATE = 1;
-
 let audioEl = null;
 
-// text -> {text, file} の逆引きを一度だけ作る
+// text -> file の逆引きを一度だけ作る
 const manifestByText = new Map();
 Object.values(AUDIO_MANIFEST).forEach((entry) => {
   if (entry && entry.text && entry.file) manifestByText.set(entry.text, entry.file);
 });
 
-/** @returns {number} */
-export function loadPlaybackRate() {
-  try {
-    const rate = Number(localStorage.getItem(RATE_KEY));
-    if (PLAYBACK_RATES.includes(rate)) return rate;
-  } catch {
-    // 読み込み失敗時は既定値
-  }
-  return DEFAULT_RATE;
-}
-
-/** @param {number} rate */
-export function savePlaybackRate(rate) {
-  try {
-    localStorage.setItem(RATE_KEY, String(rate));
-  } catch {
-    // 保存に失敗しても続行する
-  }
+// 発音速度はアプリ全体（不規則動詞・単語ドリル共通）でヘッダーのAudioEngineが持つ設定を使う
+function currentRate() {
+  return window.AudioEngine ? window.AudioEngine.speechRate : 1;
 }
 
 function speakWithWebSpeech(text, rate) {
@@ -51,7 +32,7 @@ function speakWithWebSpeech(text, rate) {
  * @param {string} text
  */
 export function speak(text) {
-  const rate = loadPlaybackRate();
+  const rate = currentRate();
   const file = manifestByText.get(text);
   if (!file) {
     speakWithWebSpeech(text, rate);
