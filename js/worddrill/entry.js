@@ -76,7 +76,6 @@ export function mountWordDrill(hostElement) {
   let currentChoices = [];
   let currentCorrectIndex = -1;
   let isWeakSession = false;
-  let hasScrolledForQuiz = false;
   let wordListGrade = "all";
   let wordListQuery = "";
   let wordListPage = 0;
@@ -129,14 +128,12 @@ export function mountWordDrill(hostElement) {
         choices: currentChoices,
         correctIndex: currentCorrectIndex,
       });
-      // クイズ中はヘッダーを隠しているので、最初の1回は問題を画面上端に寄せておく。
-      if (!hasScrolledForQuiz) {
-        hostElement.scrollIntoView({ block: "start", behavior: "smooth" });
-        hasScrolledForQuiz = true;
-      } else if (picked !== null) {
-        // 回答後は解説カードと次へボタンが画面下にはみ出しがちなので、
-        // ヘッダーが隠れて見た目が安定した状態のまま、その分だけ軽くスクロールする。
-        hostElement.scrollIntoView({ block: "end", behavior: "smooth" });
+      // 回答後は解説カードと次へボタンが画面下にはみ出しがちなので、その分だけ
+      // 位置を合わせる。smooth scrollはiOS Safariでアドレスバーの開閉と重なると
+      // 表示が一瞬崩れることがあるため、アニメーションなしで即座に合わせる。
+      // クイズ開始直後(未回答)はヘッダーを隠しているだけでほぼ画面に収まるため、動かさない。
+      if (picked !== null) {
+        hostElement.scrollIntoView({ block: "end", behavior: "auto" });
       }
     } else if (screen === "done") {
       wrap.innerHTML = renderDoneScreen({
@@ -204,7 +201,6 @@ export function mountWordDrill(hostElement) {
     idx = 0;
     picked = null;
     runStats = { sure: 0, guess: 0, miss: 0 };
-    hasScrolledForQuiz = false;
     prepareVocabChoices();
     screen = "quiz";
     render();
