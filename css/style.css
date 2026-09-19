@@ -169,6 +169,13 @@ body {
   flex: 1;
 }
 
+/* 単語ドリルのクイズ中はヘッダー・応援バナーを隠し、回答後の解説までスクロールなしで
+   見えるようにする（画面が縦に長いヘッダーで圧迫されるのを避けるため） */
+body.word-quiz-active .app-header,
+body.word-quiz-active .cheer-banner {
+  display: none;
+}
+
 /* --- ヘッダー & ナビゲーション --- */
 .app-header {
   display: flex;

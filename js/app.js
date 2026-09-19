@@ -39,6 +39,9 @@ window.App = {
   switchTab(tabId) {
     this.currentTab = tabId;
 
+    // 単語タブを離れた/戻った場合に、クイズ中のヘッダー非表示状態を再同期する
+    if (window.WordDrill) window.WordDrill.syncQuizChrome();
+
     // ナビゲーションタブの更新
     document.querySelectorAll('.nav-tab').forEach(tab => {
       tab.classList.toggle('active', tab.getAttribute('data-tab') === tabId);

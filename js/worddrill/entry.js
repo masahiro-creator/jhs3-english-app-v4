@@ -76,6 +76,7 @@ export function mountWordDrill(hostElement) {
   let currentChoices = [];
   let currentCorrectIndex = -1;
   let isWeakSession = false;
+  let hasScrolledForQuiz = false;
   let wordListGrade = "all";
   let wordListQuery = "";
   let wordListPage = 0;
@@ -98,7 +99,16 @@ export function mountWordDrill(hostElement) {
     currentCorrectIndex = choices.indexOf(word.meaning);
   }
 
+  function syncQuizChrome() {
+    // クイズ中かつ単語タブを見ているときだけヘッダー・応援バナーを隠す
+    // （やめる以外の方法でタブを離れた場合に隠れっぱなしにならないようcurrentTabも見る）
+    const onWordsTab = !window.App || window.App.currentTab === "words";
+    document.body.classList.toggle("word-quiz-active", screen === "quiz" && onWordsTab);
+  }
+
   function render() {
+    syncQuizChrome();
+
     if (screen === "home") {
       wrap.innerHTML = renderHomeScreen({
         stageCounts: computeStageCounts(progress),
@@ -119,7 +129,13 @@ export function mountWordDrill(hostElement) {
         choices: currentChoices,
         correctIndex: currentCorrectIndex,
       });
-      if (picked !== null) {
+      // クイズ中はヘッダーを隠しているので、最初の1回は問題を画面上端に寄せておく。
+      if (!hasScrolledForQuiz) {
+        hostElement.scrollIntoView({ block: "start", behavior: "smooth" });
+        hasScrolledForQuiz = true;
+      } else if (picked !== null) {
+        // 回答後は解説カードと次へボタンが画面下にはみ出しがちなので、
+        // ヘッダーが隠れて見た目が安定した状態のまま、その分だけ軽くスクロールする。
         hostElement.scrollIntoView({ block: "end", behavior: "smooth" });
       }
     } else if (screen === "done") {
@@ -188,6 +204,7 @@ export function mountWordDrill(hostElement) {
     idx = 0;
     picked = null;
     runStats = { sure: 0, guess: 0, miss: 0 };
+    hasScrolledForQuiz = false;
     prepareVocabChoices();
     screen = "quiz";
     render();
@@ -308,6 +325,7 @@ export function mountWordDrill(hostElement) {
     startWeakSession,
     setNewPerDay,
     goWordList,
+    syncQuizChrome,
     getCategoryStats() {
       return computeCategoryStats(DECK.items, progress);
     },

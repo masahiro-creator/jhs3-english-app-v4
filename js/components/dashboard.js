@@ -63,8 +63,8 @@ window.DashboardComponent = {
             <div style="font-size: 13px; font-weight: 800; margin-bottom: 8px; text-align: center; color: #60a5fa;">📚 単語</div>
             ${word ? `
               <div style="display: flex; gap: 8px;">
-                ${missionButton({ label: '新規', count: word.freshCount, unit: '語', onclick: "window.WordDrill.startNewSession(); window.App.switchTab('words');" })}
-                ${missionButton({ label: '復習', count: word.dueCount, unit: '語', onclick: "window.WordDrill.startReviewSession(); window.App.switchTab('words');" })}
+                ${missionButton({ label: '新規', count: word.freshCount, unit: '語', onclick: "window.App.switchTab('words'); window.WordDrill.startNewSession();" })}
+                ${missionButton({ label: '復習', count: word.dueCount, unit: '語', onclick: "window.App.switchTab('words'); window.WordDrill.startReviewSession();" })}
               </div>
               <div style="font-size: 11px; color: var(--theme-text-sub); margin: 10px 0 6px; text-align: center;">1日の新規数</div>
               <div style="display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;">${wordPerDayButtonsHtml}</div>
@@ -95,7 +95,7 @@ window.DashboardComponent = {
       ${(verbWeakItems.length > 0 || (word && word.weakCount > 0)) ? `
         <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: -8px 0 16px;">
           ${verbWeakItems.length > 0 ? `<button style="background:none; border:none; color:#f87171; font-size:13px; text-decoration:underline; cursor:pointer; padding:6px;" onclick="window.App.switchTab('weak')">🎯 動詞の弱点克服 (${verbWeakItems.length}件)</button>` : ''}
-          ${word && word.weakCount > 0 ? `<button style="background:none; border:none; color:#f87171; font-size:13px; text-decoration:underline; cursor:pointer; padding:6px;" onclick="window.WordDrill.startWeakSession(); window.App.switchTab('words');">🎯 単語の弱点克服 (${word.weakCount}件)</button>` : ''}
+          ${word && word.weakCount > 0 ? `<button style="background:none; border:none; color:#f87171; font-size:13px; text-decoration:underline; cursor:pointer; padding:6px;" onclick="window.App.switchTab('words'); window.WordDrill.startWeakSession();">🎯 単語の弱点克服 (${word.weakCount}件)</button>` : ''}
         </div>
       ` : ''}
 
